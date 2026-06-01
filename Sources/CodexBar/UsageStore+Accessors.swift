@@ -68,6 +68,8 @@ extension UsageStore {
             return MiniMaxAPISettingsError.missingToken.errorDescription
         case .kimi:
             return KimiAPIError.missingToken.errorDescription
+        case .custom:
+            return CustomProviderError.missingScriptPath.errorDescription
         default:
             return "\(self.metadata(for: provider).displayName) is unavailable in the current environment."
         }

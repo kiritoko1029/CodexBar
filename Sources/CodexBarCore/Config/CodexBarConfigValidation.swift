@@ -90,6 +90,7 @@ public enum CodexBarConfigValidator {
         }
 
         if let source = entry.source, source == .api,
+           provider != .custom,
            entry.apiKey?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true
         {
             issues.append(CodexBarConfigIssue(

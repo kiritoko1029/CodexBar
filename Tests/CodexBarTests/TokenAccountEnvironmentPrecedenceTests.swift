@@ -153,6 +153,26 @@ struct TokenAccountEnvironmentPrecedenceTests {
     }
 
     @Test
+    func `custom CLI snapshot reads script settings from config`() throws {
+        let config = CodexBarConfig(
+            providers: [
+                ProviderConfig(
+                    id: .custom,
+                    customScriptPath: " ~/usage.js ",
+                    customScriptArguments: [" --profile ", "work"],
+                    customScriptTimeoutSeconds: 12),
+            ])
+        let selection = TokenAccountCLISelection(label: nil, index: nil, allAccounts: false)
+        let tokenContext = try TokenAccountCLIContext(selection: selection, config: config, verbose: false)
+        let snapshot = try #require(tokenContext.settingsSnapshot(for: .custom, account: nil))
+        let customSettings = try #require(snapshot.custom)
+
+        #expect(customSettings.scriptPath == "~/usage.js")
+        #expect(customSettings.arguments == ["--profile", "work"])
+        #expect(customSettings.timeoutSeconds == 12)
+    }
+
+    @Test
     func `claude OAuth token account overrides environment in app environment builder`() {
         let settings = Self.makeSettingsStore(suite: "TokenAccountEnvironmentPrecedenceTests-claude-app")
         settings.addTokenAccount(provider: .claude, label: "OAuth", token: "Bearer sk-ant-oat-account-token")

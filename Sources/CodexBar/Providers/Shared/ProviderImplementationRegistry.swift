@@ -41,6 +41,7 @@ enum ProviderImplementationRegistry {
         case .t3chat: T3ChatProviderImplementation()
         case .ollama: OllamaProviderImplementation()
         case .synthetic: SyntheticProviderImplementation()
+        case .custom: CustomProviderImplementation()
         case .openrouter: OpenRouterProviderImplementation()
         case .elevenlabs: ElevenLabsProviderImplementation()
         case .warp: WarpProviderImplementation()
