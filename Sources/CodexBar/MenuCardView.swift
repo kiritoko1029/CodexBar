@@ -940,6 +940,12 @@ extension UsageMenuCardView.Model {
             }
             return self.planDisplay(pass, for: provider)
         }
+        if provider == .sub2api,
+           let planName = snapshot?.sub2APIUsage?.planName,
+           !planName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        {
+            return planName
+        }
         if let plan = snapshot?.loginMethod(for: provider), !plan.isEmpty {
             return self.planDisplay(plan, for: provider)
         }

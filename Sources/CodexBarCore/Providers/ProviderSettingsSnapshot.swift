@@ -29,7 +29,8 @@ public struct ProviderSettingsSnapshot: Sendable {
         mimo: MiMoProviderSettings? = nil,
         abacus: AbacusProviderSettings? = nil,
         mistral: MistralProviderSettings? = nil,
-        stepfun: StepFunProviderSettings? = nil) -> ProviderSettingsSnapshot
+        stepfun: StepFunProviderSettings? = nil,
+        custom: CustomProviderSettings? = nil) -> ProviderSettingsSnapshot
     {
         ProviderSettingsSnapshot(
             debugMenuEnabled: debugMenuEnabled,
@@ -59,7 +60,8 @@ public struct ProviderSettingsSnapshot: Sendable {
             mimo: mimo,
             abacus: abacus,
             mistral: mistral,
-            stepfun: stepfun)
+            stepfun: stepfun,
+            custom: custom)
     }
 
     public struct CodexProviderSettings: Sendable {
@@ -372,6 +374,22 @@ public struct ProviderSettingsSnapshot: Sendable {
         }
     }
 
+    public struct CustomProviderSettings: Sendable {
+        public let scriptPath: String?
+        public let arguments: [String]
+        public let timeoutSeconds: TimeInterval
+
+        public init(
+            scriptPath: String?,
+            arguments: [String] = [],
+            timeoutSeconds: TimeInterval = CustomProviderSettingsDefaults.timeoutSeconds)
+        {
+            self.scriptPath = scriptPath
+            self.arguments = arguments
+            self.timeoutSeconds = CustomProviderSettingsDefaults.clampedTimeout(timeoutSeconds)
+        }
+    }
+
     public let debugMenuEnabled: Bool
     public let debugKeepCLISessionsAlive: Bool
     public let codex: CodexProviderSettings?
@@ -401,6 +419,7 @@ public struct ProviderSettingsSnapshot: Sendable {
     public let abacus: AbacusProviderSettings?
     public let mistral: MistralProviderSettings?
     public let stepfun: StepFunProviderSettings?
+    public let custom: CustomProviderSettings?
 
     public var jetbrainsIDEBasePath: String? {
         self.jetbrains?.ideBasePath
@@ -435,7 +454,8 @@ public struct ProviderSettingsSnapshot: Sendable {
         mimo: MiMoProviderSettings? = nil,
         abacus: AbacusProviderSettings? = nil,
         mistral: MistralProviderSettings? = nil,
-        stepfun: StepFunProviderSettings? = nil)
+        stepfun: StepFunProviderSettings? = nil,
+        custom: CustomProviderSettings? = nil)
     {
         self.debugMenuEnabled = debugMenuEnabled
         self.debugKeepCLISessionsAlive = debugKeepCLISessionsAlive
@@ -466,6 +486,18 @@ public struct ProviderSettingsSnapshot: Sendable {
         self.abacus = abacus
         self.mistral = mistral
         self.stepfun = stepfun
+        self.custom = custom
+    }
+}
+
+public enum CustomProviderSettingsDefaults {
+    public static let timeoutSeconds: TimeInterval = 30
+    public static let minimumTimeoutSeconds: TimeInterval = 1
+    public static let maximumTimeoutSeconds: TimeInterval = 300
+
+    public static func clampedTimeout(_ seconds: TimeInterval) -> TimeInterval {
+        guard seconds.isFinite else { return self.timeoutSeconds }
+        return seconds.clamped(to: self.minimumTimeoutSeconds...self.maximumTimeoutSeconds)
     }
 }
 
@@ -497,6 +529,7 @@ public enum ProviderSettingsSnapshotContribution: Sendable {
     case abacus(ProviderSettingsSnapshot.AbacusProviderSettings)
     case mistral(ProviderSettingsSnapshot.MistralProviderSettings)
     case stepfun(ProviderSettingsSnapshot.StepFunProviderSettings)
+    case custom(ProviderSettingsSnapshot.CustomProviderSettings)
 }
 
 public struct ProviderSettingsSnapshotBuilder: Sendable {
@@ -529,6 +562,7 @@ public struct ProviderSettingsSnapshotBuilder: Sendable {
     public var abacus: ProviderSettingsSnapshot.AbacusProviderSettings?
     public var mistral: ProviderSettingsSnapshot.MistralProviderSettings?
     public var stepfun: ProviderSettingsSnapshot.StepFunProviderSettings?
+    public var custom: ProviderSettingsSnapshot.CustomProviderSettings?
 
     public init(debugMenuEnabled: Bool = false, debugKeepCLISessionsAlive: Bool = false) {
         self.debugMenuEnabled = debugMenuEnabled
@@ -565,6 +599,7 @@ public struct ProviderSettingsSnapshotBuilder: Sendable {
         case let .abacus(value): self.abacus = value
         case let .mistral(value): self.mistral = value
         case let .stepfun(value): self.stepfun = value
+        case let .custom(value): self.custom = value
         }
     }
 
@@ -598,6 +633,7 @@ public struct ProviderSettingsSnapshotBuilder: Sendable {
             mimo: self.mimo,
             abacus: self.abacus,
             mistral: self.mistral,
-            stepfun: self.stepfun)
+            stepfun: self.stepfun,
+            custom: self.custom)
     }
 }

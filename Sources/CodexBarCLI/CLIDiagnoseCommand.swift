@@ -218,6 +218,8 @@ extension CodexBarCLI {
             GroqSettingsReader.apiKey(environment: environment) != nil
         case .kilo:
             KiloSettingsReader.apiKey(environment: environment) != nil
+        case .sub2api:
+            Sub2APISettingsReader.apiKey(environment: environment) != nil
         default:
             false
         }

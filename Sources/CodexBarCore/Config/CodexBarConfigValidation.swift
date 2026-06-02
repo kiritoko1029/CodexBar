@@ -90,6 +90,7 @@ public enum CodexBarConfigValidator {
         }
 
         if let source = entry.source, source == .api,
+           provider != .custom,
            entry.apiKey?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true
         {
             issues.append(CodexBarConfigIssue(
@@ -158,7 +159,8 @@ public enum CodexBarConfigValidator {
                 provider: provider,
                 field: "enterpriseHost",
                 code: "enterprise_host_unused",
-                message: "enterpriseHost is set but only azureopenai, copilot, and llmproxy support enterpriseHost."))
+                message: "enterpriseHost is set but only azureopenai, copilot, llmproxy, and sub2api support " +
+                    "enterpriseHost."))
         }
 
         if let tokenAccounts = entry.tokenAccounts, !tokenAccounts.accounts.isEmpty,
@@ -206,7 +208,7 @@ public enum CodexBarConfigValidator {
 
     private static func providerSupportsEnterpriseHost(_ provider: UsageProvider) -> Bool {
         switch provider {
-        case .azureopenai, .copilot, .llmproxy:
+        case .azureopenai, .copilot, .llmproxy, .sub2api:
             true
         default:
             false

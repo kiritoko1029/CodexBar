@@ -982,15 +982,12 @@ extension UsageStore {
         let claudeUsageDataSource = self.settings.claudeUsageDataSource
         let claudeCookieSource = self.settings.claudeCookieSource
         let claudeCookieHeader = self.settings.claudeCookieHeader
-        let claudeDebugConfiguration: ClaudeDebugLogConfiguration? = if provider == .claude {
-            await self.makeClaudeDebugConfiguration(
-                fallbackUsageDataSource: claudeUsageDataSource,
-                fallbackWebExtrasEnabled: claudeWebExtrasEnabled,
-                fallbackCookieSource: claudeCookieSource,
-                fallbackCookieHeader: claudeCookieHeader)
-        } else {
-            nil
-        }
+        let claudeDebugConfiguration = await self.makeClaudeDebugConfigurationIfNeeded(
+            provider: provider,
+            fallbackUsageDataSource: claudeUsageDataSource,
+            fallbackWebExtrasEnabled: claudeWebExtrasEnabled,
+            fallbackCookieSource: claudeCookieSource,
+            fallbackCookieHeader: claudeCookieHeader)
         let cursorCookieSource = self.settings.cursorCookieSource
         let cursorCookieHeader = self.settings.cursorCookieHeader
         let ampCookieSource = self.settings.ampCookieSource
@@ -1004,6 +1001,11 @@ extension UsageStore {
         let elevenLabsDebugContext = self.elevenLabsAPIKeyDebugContext(processEnvironment: processEnvironment)
         let deepSeekHasEnvToken = DeepSeekSettingsReader.apiKey(environment: processEnvironment) != nil
         let deepSeekHasTokenAccount = self.settings.selectedTokenAccount(for: .deepseek) != nil
+        let customScriptPath = self.settings.customScriptPath.trimmingCharacters(in: .whitespacesAndNewlines)
+        let customScriptArgumentsCount = self.settings.customScriptArgumentsText
+            .split(whereSeparator: \.isNewline)
+            .count { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        let customScriptTimeoutText = self.settings.customScriptTimeoutText
         let deepSeekEnvironment = ProviderRegistry.makeEnvironment(
             base: processEnvironment,
             provider: .deepseek,
@@ -1039,6 +1041,7 @@ extension UsageStore {
                 .t3chat: "T3 Chat debug log not yet implemented",
                 .llmproxy: "LLM Proxy debug log not yet implemented",
                 .deepgram: "Deepgram debug log not yet implemented",
+                .sub2api: "Sub2API debug log not yet implemented",
             ]
             let buildText = {
                 switch provider {
@@ -1067,6 +1070,10 @@ extension UsageStore {
                     let hasAny = resolution != nil
                     let source = resolution?.source.rawValue ?? "none"
                     return "SYNTHETIC_API_KEY=\(hasAny ? "present" : "missing") source=\(source)"
+                case .custom:
+                    let hasScript = !customScriptPath.isEmpty
+                    return "custom script=\(hasScript ? customScriptPath : "missing") " +
+                        "arguments=\(customScriptArgumentsCount) timeout=\(customScriptTimeoutText)s"
                 case .cursor:
                     return await Self.debugCursorLog(
                         browserDetection: browserDetection,
@@ -1116,7 +1123,7 @@ extension UsageStore {
                 case .gemini, .antigravity, .opencode, .opencodego, .alibabatokenplan, .factory, .copilot,
                      .vertexai, .kilo, .kiro, .kimi, .kimik2, .moonshot, .jetbrains, .perplexity, .mimo, .doubao,
                      .abacus, .mistral, .codebuff, .crof, .windsurf, .venice, .manus, .commandcode, .stepfun, .bedrock,
-                     .grok, .groq, .t3chat, .llmproxy, .deepgram:
+                     .grok, .groq, .t3chat, .llmproxy, .deepgram, .sub2api:
                     return unimplementedDebugLogMessages[provider] ?? "Debug log not yet implemented"
                 }
             }
@@ -1126,6 +1133,21 @@ extension UsageStore {
         }.value
         self.probeLogs[provider] = text
         return text
+    }
+
+    private func makeClaudeDebugConfigurationIfNeeded(
+        provider: UsageProvider,
+        fallbackUsageDataSource: ClaudeUsageDataSource,
+        fallbackWebExtrasEnabled: Bool,
+        fallbackCookieSource: ProviderCookieSource,
+        fallbackCookieHeader: String) async -> ClaudeDebugLogConfiguration?
+    {
+        guard provider == .claude else { return nil }
+        return await self.makeClaudeDebugConfiguration(
+            fallbackUsageDataSource: fallbackUsageDataSource,
+            fallbackWebExtrasEnabled: fallbackWebExtrasEnabled,
+            fallbackCookieSource: fallbackCookieSource,
+            fallbackCookieHeader: fallbackCookieHeader)
     }
 
     private func makeClaudeDebugConfiguration(

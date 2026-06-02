@@ -135,6 +135,8 @@ struct TokenAccountCLIContext {
             return self.makeSnapshot(
                 jetbrains: ProviderSettingsSnapshot.JetBrainsProviderSettings(
                     ideBasePath: nil))
+        case .custom:
+            return self.makeSnapshot(custom: self.makeCustomSettingsSnapshot(config))
         default:
             return nil
         }
@@ -270,7 +272,8 @@ struct TokenAccountCLIContext {
         mimo: ProviderSettingsSnapshot.MiMoProviderSettings? = nil,
         abacus: ProviderSettingsSnapshot.AbacusProviderSettings? = nil,
         mistral: ProviderSettingsSnapshot.MistralProviderSettings? = nil,
-        stepfun: ProviderSettingsSnapshot.StepFunProviderSettings? = nil) -> ProviderSettingsSnapshot
+        stepfun: ProviderSettingsSnapshot.StepFunProviderSettings? = nil,
+        custom: ProviderSettingsSnapshot.CustomProviderSettings? = nil) -> ProviderSettingsSnapshot
     {
         ProviderSettingsSnapshot.make(
             codex: codex,
@@ -295,7 +298,18 @@ struct TokenAccountCLIContext {
             mimo: mimo,
             abacus: abacus,
             mistral: mistral,
-            stepfun: stepfun)
+            stepfun: stepfun,
+            custom: custom)
+    }
+
+    private func makeCustomSettingsSnapshot(_ config: ProviderConfig?)
+        -> ProviderSettingsSnapshot.CustomProviderSettings
+    {
+        ProviderSettingsSnapshot.CustomProviderSettings(
+            scriptPath: config?.sanitizedCustomScriptPath,
+            arguments: config?.sanitizedCustomScriptArguments ?? [],
+            timeoutSeconds: config?.sanitizedCustomScriptTimeoutSeconds ??
+                CustomProviderSettingsDefaults.timeoutSeconds)
     }
 
     private func makeCodexSettingsSnapshot(

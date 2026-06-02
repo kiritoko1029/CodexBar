@@ -81,6 +81,8 @@ public enum ProviderDescriptorRegistry {
         .t3chat: T3ChatProviderDescriptor.descriptor,
         .ollama: OllamaProviderDescriptor.descriptor,
         .synthetic: SyntheticProviderDescriptor.descriptor,
+        .custom: CustomProviderDescriptor.descriptor,
+        .sub2api: Sub2APIProviderDescriptor.descriptor,
         .openrouter: OpenRouterProviderDescriptor.descriptor,
         .elevenlabs: ElevenLabsProviderDescriptor.descriptor,
         .warp: WarpProviderDescriptor.descriptor,

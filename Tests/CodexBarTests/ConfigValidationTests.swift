@@ -20,6 +20,14 @@ struct ConfigValidationTests {
     }
 
     @Test
+    func `allows custom API source without API key`() {
+        var config = CodexBarConfig.makeDefault()
+        config.setProviderConfig(ProviderConfig(id: .custom, source: .api, apiKey: nil))
+        let issues = CodexBarConfigValidator.validate(config)
+        #expect(!issues.contains(where: { $0.provider == .custom && $0.code == "api_key_missing" }))
+    }
+
+    @Test
     func `reports invalid region`() {
         var config = CodexBarConfig.makeDefault()
         config.setProviderConfig(ProviderConfig(id: .minimax, region: "nowhere"))

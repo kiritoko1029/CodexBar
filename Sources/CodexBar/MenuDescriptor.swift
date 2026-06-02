@@ -152,7 +152,7 @@ struct MenuDescriptor {
             if let primary = snap.primary {
                 let primaryWindow = if provider == .warp || provider == .kilo || provider == .mimo || provider ==
                     .abacus ||
-                    provider == .deepseek || provider == .azureopenai
+                    provider == .deepseek || provider == .azureopenai || provider == .sub2api
                 {
                     // Some providers use resetDescription for non-reset detail
                     // (e.g., "Unlimited", "X/Y credits"). Avoid rendering it as a "Resets ..." line.
@@ -171,7 +171,7 @@ struct MenuDescriptor {
                     resetStyle: resetStyle,
                     showUsed: settings.usageBarsShowUsed)
                 if provider == .warp || provider == .kilo || provider == .mimo || provider == .abacus || provider ==
-                    .deepseek || provider == .azureopenai,
+                    .deepseek || provider == .azureopenai || provider == .sub2api,
                     let detail = primary.resetDescription?.trimmingCharacters(in: .whitespacesAndNewlines),
                     !detail.isEmpty
                 {
@@ -196,7 +196,8 @@ struct MenuDescriptor {
             }
             if let weekly = snap.secondary {
                 let weeklyResetOverride: String? = {
-                    guard provider == .warp || provider == .kilo || provider == .perplexity || provider == .crof
+                    guard provider == .warp || provider == .kilo || provider == .perplexity || provider == .crof ||
+                        provider == .sub2api
                     else { return nil }
                     let detail = weekly.resetDescription?.trimmingCharacters(in: .whitespacesAndNewlines)
                     guard let detail, !detail.isEmpty else { return nil }
@@ -436,6 +437,24 @@ struct MenuDescriptor {
             }
             for detail in kiloLogin.details {
                 entries.append(.text("\(L("Activity")): \(detail)", .secondary))
+            }
+        } else if provider == .sub2api {
+            if let planName = snapshot?.sub2APIUsage?.planName,
+               !planName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            {
+                entries.append(.text("\(L("Plan")): \(planName)", .secondary))
+            }
+            if let mode = snapshot?.sub2APIUsage?.mode,
+               !mode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            {
+                entries.append(.text("\(L("Auth")): \(mode)", .secondary))
+            }
+            if let usage = snapshot?.sub2APIUsage,
+               let remaining = usage.remaining
+            {
+                entries.append(.text(
+                    "\(L("Remaining")): \(Sub2APIUsageSnapshot.moneyString(remaining, unit: usage.unit))",
+                    .secondary))
             }
         } else if let loginMethodText, !loginMethodText.isEmpty {
             if provider == .openrouter || provider == .mimo,

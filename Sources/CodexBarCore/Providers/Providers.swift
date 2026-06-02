@@ -31,6 +31,8 @@ public enum UsageProvider: String, CaseIterable, Sendable, Codable {
     case t3chat
     case ollama
     case synthetic
+    case custom
+    case sub2api
     case warp
     case openrouter
     case elevenlabs
@@ -82,6 +84,8 @@ public enum IconStyle: Sendable, CaseIterable {
     case t3chat
     case ollama
     case synthetic
+    case custom
+    case sub2api
     case warp
     case openrouter
     case elevenlabs
