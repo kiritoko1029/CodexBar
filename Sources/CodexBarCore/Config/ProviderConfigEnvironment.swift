@@ -18,6 +18,9 @@ public enum ProviderConfigEnvironment {
         if provider == .llmproxy {
             return self.applyLLMProxyOverrides(base: base, config: config)
         }
+        if provider == .sub2api {
+            return self.applySub2APIOverrides(base: base, config: config)
+        }
         if provider == .azureopenai {
             return self.applyAzureOpenAIOverrides(base: base, config: config)
         }
@@ -65,7 +68,7 @@ public enum ProviderConfigEnvironment {
     public static func supportsAPIKeyOverride(for provider: UsageProvider) -> Bool {
         if self.directAPIKeyEnvironmentKey(for: provider) != nil { return true }
         switch provider {
-        case .copilot, .kimik2, .warp, .codebuff, .crof, .doubao:
+        case .copilot, .kimik2, .warp, .codebuff, .crof, .doubao, .sub2api:
             return true
         case .azureopenai:
             return true
@@ -214,6 +217,20 @@ public enum ProviderConfigEnvironment {
         }
         if let baseURL = config?.sanitizedEnterpriseHost {
             env[LLMProxySettingsReader.baseURLEnvironmentKey] = baseURL
+        }
+        return env
+    }
+
+    private static func applySub2APIOverrides(
+        base: [String: String],
+        config: ProviderConfig?) -> [String: String]
+    {
+        var env = base
+        if let apiKey = config?.sanitizedAPIKey {
+            env[Sub2APISettingsReader.apiKeyEnvironmentKey] = apiKey
+        }
+        if let baseURL = config?.sanitizedEnterpriseHost {
+            env[Sub2APISettingsReader.baseURLEnvironmentKey] = baseURL
         }
         return env
     }

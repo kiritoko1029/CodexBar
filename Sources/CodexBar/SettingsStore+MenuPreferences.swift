@@ -96,7 +96,10 @@ extension SettingsStore {
     }
 
     func isCostUsageEffectivelyEnabled(for provider: UsageProvider) -> Bool {
-        self.costUsageEnabled
+        if provider == .sub2api {
+            return true
+        }
+        return self.costUsageEnabled
             && ProviderDescriptorRegistry.descriptor(for: provider).tokenCost.supportsTokenCost
     }
 

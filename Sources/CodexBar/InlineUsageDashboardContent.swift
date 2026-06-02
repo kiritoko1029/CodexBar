@@ -42,6 +42,12 @@ extension UsageMenuCardView.Model {
             return usage.displayLines
         }
 
+        if input.provider == .sub2api,
+           let usage = input.snapshot?.sub2APIUsage
+        {
+            return usage.displayLines
+        }
+
         if input.provider == .minimax,
            input.showOptionalCreditsAndExtraUsage,
            let billing = input.snapshot?.minimaxUsage?.billingSummary
@@ -150,7 +156,7 @@ extension UsageMenuCardView.Model {
     }
 
     static func usesProviderCostHistoryAsPrimaryDashboard(_ provider: UsageProvider) -> Bool {
-        provider == .openai || provider == .mistral
+        provider == .openai || provider == .mistral || provider == .sub2api
     }
 
     static func primaryCostHistorySnapshot(input: Input) -> CostUsageTokenSnapshot? {
@@ -162,6 +168,11 @@ extension UsageMenuCardView.Model {
             return input.snapshot == nil ? input.tokenSnapshot : nil
         case .mistral:
             if let projected = input.snapshot?.mistralUsage?.toCostUsageTokenSnapshot() {
+                return projected
+            }
+            return input.snapshot == nil ? input.tokenSnapshot : nil
+        case .sub2api:
+            if let projected = input.snapshot?.sub2APIUsage?.toCostUsageTokenSnapshot() {
                 return projected
             }
             return input.snapshot == nil ? input.tokenSnapshot : nil
@@ -205,7 +216,7 @@ extension UsageMenuCardView.Model {
         }
         let latest = snapshot.daily.max { lhs, rhs in lhs.date < rhs.date }
         var details: [String] = []
-        if let topModel = Self.topCostModel(from: snapshot.daily) {
+        if provider != .sub2api, let topModel = Self.topCostModel(from: snapshot.daily) {
             details.append("\(L("Top model")): \(Self.shortModelName(topModel))")
         }
         if let requestCount = snapshot.last30DaysRequests {

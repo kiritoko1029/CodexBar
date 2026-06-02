@@ -218,6 +218,21 @@ enum CLIRenderer {
             for detail in kiloLogin.details {
                 lines.append(self.labelValueLine("Activity", value: detail, useColor: context.useColor))
             }
+        } else if provider == .sub2api,
+                  let usage = snapshot.sub2APIUsage
+        {
+            if let planName = usage.planName, !planName.isEmpty {
+                lines.append(self.labelValueLine("Plan", value: planName, useColor: context.useColor))
+            }
+            if let mode = usage.mode, !mode.isEmpty {
+                lines.append(self.labelValueLine("Mode", value: mode, useColor: context.useColor))
+            }
+            if let remaining = usage.remaining {
+                lines.append(self.labelValueLine(
+                    "Remaining",
+                    value: Sub2APIUsageSnapshot.moneyString(remaining, unit: usage.unit),
+                    useColor: context.useColor))
+            }
         } else if let plan = snapshot.loginMethod(for: provider), !plan.isEmpty {
             let displayPlan = if provider == .codex {
                 CodexPlanFormatting.displayName(plan) ?? plan
@@ -266,7 +281,7 @@ enum CLIRenderer {
         lines: inout [String])
     {
         if provider == .warp || provider == .kilo || provider == .mistral || provider == .deepseek ||
-            provider == .crof
+            provider == .crof || provider == .sub2api
         {
             if let reset = self.resetLineForDetailBackedWindow(window: window, style: context.resetStyle, now: now) {
                 lines.append(self.subtleLine(reset, useColor: context.useColor))

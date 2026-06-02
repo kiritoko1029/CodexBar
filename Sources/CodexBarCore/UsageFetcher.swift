@@ -93,6 +93,7 @@ public struct UsageSnapshot: Codable, Sendable {
     public let openAIAPIUsage: OpenAIAPIUsageSnapshot?
     public let claudeAdminAPIUsage: ClaudeAdminAPIUsageSnapshot?
     public let mistralUsage: MistralUsageSnapshot?
+    public let sub2APIUsage: Sub2APIUsageSnapshot?
     public let deepgramUsage: DeepgramUsageSnapshot?
     public let cursorRequests: CursorRequestUsage?
     public let updatedAt: Date
@@ -109,6 +110,7 @@ public struct UsageSnapshot: Codable, Sendable {
         case openAIAPIUsage
         case claudeAdminAPIUsage
         case mistralUsage
+        case sub2APIUsage
         case deepgramUsage
         case updatedAt
         case identity
@@ -131,6 +133,7 @@ public struct UsageSnapshot: Codable, Sendable {
         openAIAPIUsage: OpenAIAPIUsageSnapshot? = nil,
         claudeAdminAPIUsage: ClaudeAdminAPIUsageSnapshot? = nil,
         mistralUsage: MistralUsageSnapshot? = nil,
+        sub2APIUsage: Sub2APIUsageSnapshot? = nil,
         deepgramUsage: DeepgramUsageSnapshot? = nil,
         cursorRequests: CursorRequestUsage? = nil,
         updatedAt: Date,
@@ -149,6 +152,7 @@ public struct UsageSnapshot: Codable, Sendable {
         self.openAIAPIUsage = openAIAPIUsage
         self.claudeAdminAPIUsage = claudeAdminAPIUsage
         self.mistralUsage = mistralUsage
+        self.sub2APIUsage = sub2APIUsage
         self.deepgramUsage = deepgramUsage
         self.cursorRequests = cursorRequests
         self.updatedAt = updatedAt
@@ -172,6 +176,7 @@ public struct UsageSnapshot: Codable, Sendable {
             ClaudeAdminAPIUsageSnapshot.self,
             forKey: .claudeAdminAPIUsage)
         self.mistralUsage = try container.decodeIfPresent(MistralUsageSnapshot.self, forKey: .mistralUsage)
+        self.sub2APIUsage = try container.decodeIfPresent(Sub2APIUsageSnapshot.self, forKey: .sub2APIUsage)
         self.deepgramUsage = try container.decodeIfPresent(DeepgramUsageSnapshot.self, forKey: .deepgramUsage)
         self.cursorRequests = nil // Not persisted, fetched fresh each time
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
@@ -206,6 +211,7 @@ public struct UsageSnapshot: Codable, Sendable {
         try container.encodeIfPresent(self.openAIAPIUsage, forKey: .openAIAPIUsage)
         try container.encodeIfPresent(self.claudeAdminAPIUsage, forKey: .claudeAdminAPIUsage)
         try container.encodeIfPresent(self.mistralUsage, forKey: .mistralUsage)
+        try container.encodeIfPresent(self.sub2APIUsage, forKey: .sub2APIUsage)
         try container.encodeIfPresent(self.deepgramUsage, forKey: .deepgramUsage)
         try container.encode(self.updatedAt, forKey: .updatedAt)
         try container.encodeIfPresent(self.identity, forKey: .identity)
@@ -308,6 +314,7 @@ public struct UsageSnapshot: Codable, Sendable {
             openAIAPIUsage: self.openAIAPIUsage,
             claudeAdminAPIUsage: self.claudeAdminAPIUsage,
             mistralUsage: self.mistralUsage,
+            sub2APIUsage: self.sub2APIUsage,
             deepgramUsage: self.deepgramUsage,
             cursorRequests: self.cursorRequests,
             updatedAt: self.updatedAt,
@@ -343,6 +350,7 @@ public struct UsageSnapshot: Codable, Sendable {
             openAIAPIUsage: self.openAIAPIUsage,
             claudeAdminAPIUsage: self.claudeAdminAPIUsage,
             mistralUsage: self.mistralUsage,
+            sub2APIUsage: self.sub2APIUsage,
             deepgramUsage: self.deepgramUsage,
             cursorRequests: self.cursorRequests,
             updatedAt: self.updatedAt,

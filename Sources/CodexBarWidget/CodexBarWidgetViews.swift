@@ -292,6 +292,7 @@ private struct ProviderSwitchChip: View {
         case .ollama: "Ollama"
         case .synthetic: "Synthetic"
         case .custom: "Custom"
+        case .sub2api: "Sub2API"
         case .openrouter: "OpenRouter"
         case .elevenlabs: "ElevenLabs"
         case .warp: "Warp"
@@ -704,6 +705,8 @@ enum WidgetColors {
             Color(red: 20 / 255, green: 20 / 255, blue: 20 / 255) // Synthetic charcoal
         case .custom:
             Color(red: 56 / 255, green: 140 / 255, blue: 194 / 255)
+        case .sub2api:
+            Color(red: 46 / 255, green: 122 / 255, blue: 235 / 255)
         case .openrouter:
             Color(red: 111 / 255, green: 66 / 255, blue: 193 / 255) // OpenRouter purple
         case .elevenlabs:

@@ -70,6 +70,8 @@ extension UsageStore {
             return KimiAPIError.missingToken.errorDescription
         case .custom:
             return CustomProviderError.missingScriptPath.errorDescription
+        case .sub2api:
+            return Sub2APIUsageError.missingCredentials.errorDescription
         default:
             return "\(self.metadata(for: provider).displayName) is unavailable in the current environment."
         }

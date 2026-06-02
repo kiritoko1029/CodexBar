@@ -105,6 +105,10 @@ public enum ProviderTokenResolver {
         self.llmProxyResolution(environment: environment)?.token
     }
 
+    public static func sub2APIToken(environment: [String: String] = ProcessInfo.processInfo.environment) -> String? {
+        self.sub2APIResolution(environment: environment)?.token
+    }
+
     public static func perplexitySessionToken(
         environment: [String: String] = ProcessInfo.processInfo.environment) -> String?
     {
@@ -186,6 +190,12 @@ public enum ProviderTokenResolver {
         environment: [String: String] = ProcessInfo.processInfo.environment) -> ProviderTokenResolution?
     {
         self.resolveEnv(DoubaoSettingsReader.apiKey(environment: environment))
+    }
+
+    public static func sub2APIResolution(
+        environment: [String: String] = ProcessInfo.processInfo.environment) -> ProviderTokenResolution?
+    {
+        self.resolveEnv(Sub2APISettingsReader.apiKey(environment: environment))
     }
 
     public static func zaiResolution(
